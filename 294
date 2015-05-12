@@ -1,0 +1,64 @@
+#include <stdio.h>
+#include <string.h>
+int prime_table[5000];
+void build_prime_table()
+{
+	int i, j, n=0, not_p;
+	memset(prime_table, 0, sizeof(prime_table));
+	prime_table[0] = 2;
+	for(i=3; i<=40000; i++)
+	{
+		not_p=0;
+		for(j=0; j<=n; j++)
+		{
+			if(i%prime_table[j] == 0)
+			{
+				not_p = 1;
+				break;
+			}
+		}
+		if(!not_p)	prime_table[++n] = i;
+	}
+	/*printf("%d\n", n);*/
+}
+int find_factor(int t)
+{
+	int i, factors=1, times;
+	for(i=0; i<4203; i++)
+	{
+		if(t==1)	break;
+		times = 1;
+		while((t%prime_table[i] == 0)&&(prime_table[i]!=0))
+		{
+			times++;
+			t /= prime_table[i];
+		}
+		if(prime_table[i]==0)   break;
+		factors *= times;
+	}
+	if(t!=1)
+		factors *= 2;
+	return factors;
+}
+int main()
+{
+	int lower, upper, i, ans, num_ans, tem, cases;
+	build_prime_table();
+	scanf("%d", &cases);
+	while(cases--)
+	{
+		scanf("%d%d", &lower, &upper);
+		num_ans = 0;
+		for(i=lower; i<=upper; i++)
+		{
+			tem = find_factor(i);
+			if(tem>num_ans)
+			{
+				num_ans = tem;
+				ans = i;
+			}
+		}
+		printf("Between %d and %d, %d has a maximum of %d divisors.\n", lower, upper, ans, num_ans);
+	}
+	return 0;
+}
