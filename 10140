@@ -1,0 +1,104 @@
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+int prime_table[50000], temp[1000050];
+int closest[3], distant[3];
+int L, U;
+void initial()
+{
+	int i, j;
+	memset(prime_table, 0, sizeof(prime_table));
+	prime_table[0] = prime_table[1] = 1;
+	for(i=2; i<50000; i++)
+	{
+		if(!prime_table[i])
+		{
+			j=i+i;
+			while(j<50000)
+			{
+				prime_table[j] = 1;
+				j += i;
+			}
+		}
+	}
+	/*
+	for(i=46300; i<46450; i++)
+	{
+		if(!prime_table[i])
+			printf("%d\n", i);
+	}
+	*/
+}
+int main()
+{
+	int len, top_prime, i, t, head, num;
+	initial();
+	while(EOF!=scanf("%d %d", &L, &U))
+	{
+		memset(temp, 0, sizeof(temp));
+		len = U-L;
+		closest[0] = len+2;
+		distant[0] = 0;
+		closest[1] = distant[1] = L;
+		closest[2] = distant[2] = U;
+		top_prime = (sqrt(U)+1);
+		for(i=2; i<=top_prime; i++)
+		{
+			if(!prime_table[i])
+			{
+				t = i+i;
+				if(L>t)
+                {
+                    t = L/i;
+                    t *= i;
+                }
+				if(L>t) t += i;
+				while(t<=U && t>0)
+				{
+					temp[t-L] = 1;
+					t += i;
+				}
+			}
+		}
+		if(L==1)	temp[0] = 1;
+		/*
+		for(i=0; i<=len; i++)
+			if(!temp[i])
+				printf("%d\n", i+L);
+		*/
+		num = 0;
+		for(i=0; i<=len; i++)
+			if(!temp[i])
+				num++;
+		if(num>=2)
+		{
+			i=0;
+			while(temp[i])	i++;
+			head = i;
+			for(i = head+1; i<=len; i++)
+			{
+				if(!temp[i])
+				{
+					if(i-head > distant[0])
+					{
+						distant[0] = i-head;
+						distant[1] = head;
+						distant[2] = i;
+						/*printf("distant:%d\t%d\t%d\n", distant[0]+L, distant[1]+L, distant[2]+L);*/
+					}
+					if(i-head < closest[0])
+					{
+						closest[0] = i-head;
+						closest[1] = head;
+						closest[2] = i;
+						/*printf("closest:%d\t%d\t%d\n", closest[0]+L, closest[1]+L, closest[2]+L);*/
+					}
+					head = i;
+				}
+			}
+			printf("%d,%d are closest, %d,%d are most distant.\n", closest[1]+L, closest[2]+L, distant[1]+L, distant[2]+L);
+		}
+		else	printf("There are no adjacent primes.\n");
+	}
+	return 0;
+}
