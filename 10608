@@ -1,0 +1,46 @@
+#include <stdio.h>
+#include <string.h>
+int group[30005], leader[30005];/*leader ie root, group ie how many are in the group*/
+int main()
+{
+	int cases, n, m, a, b, i, max, t;/*n<=30000, m<=500000*/
+	scanf("%d", &cases);
+	while(cases--)
+	{
+		memset(leader, -1, sizeof(leader));
+		memset(group, 0, sizeof(group));
+		max=1;
+		scanf("%d%d", &n, &m);
+		while(m--)
+		{
+			scanf("%d%d", &a, &b);
+			
+			if(leader[a]==-1 && leader[b]==-1)
+			{
+				leader[a]=leader[b]=a;
+				group[a]=2;
+			}
+			else if(leader[a]==-1)	{leader[a]=leader[b];	group[leader[b]]++;}
+			else if(leader[b]==-1)	{leader[b]=leader[a];	group[leader[a]]++;}
+			else if(leader[a] != leader[b])
+			{
+				if(group[leader[a]] >= group[leader[b]])
+				{
+					group[leader[a]] += group[leader[b]];
+					t=leader[b];
+					for(i=1; i<=n; i++)	if(leader[i]==t)	leader[i]=leader[a];
+				}
+				else
+				{
+					group[leader[b]] += group[leader[a]];
+					t=leader[a];
+					for(i=1; i<=n; i++)	if(leader[i]==t)	leader[i]=leader[b];
+				}
+			}
+			if(m==0)	break;
+		}
+		for(i=1; i<=n; i++)	if(group[i]>max)	max=group[i];
+		printf("%d\n", max);
+	}
+	return 0;
+}
