@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <string.h>
+#define max 9223372036854775806
+int map[60][60], bfs[3100], bp, bfs_len, head[60], path[60];/*0~25 capital 32~57 lower case*/
+long long int dis[60];
+void search(int x)
+{
+	int i, temp;
+	long long int t;
+	for(i=0; i<60; i++)
+		if(map[x][i])
+		{
+			if(i>25)	t=dis[x] + 1;
+			else
+			{
+				t = dis[x] + ((dis[x]+19)/20);
+				while( t - (t+19)/20  != dis[x])	t++;
+			}
+			if(dis[i]>t)	
+			{
+				dis[i]=t;
+				head[i]=x;
+				bfs[bfs_len++]=i;
+				/*
+				printf("dis[%c]:%lld\t", (char)(i+65), t);
+				printf("header=%c\t", (char)(x+65));
+				printf("bfs_len:%d\n", bfs_len);
+				*/
+			}
+		}
+}
+int main()
+{
+	int n, i, a, b, items, start, end, cases=1;
+	char c1[2], c2[2];
+	scanf("%d", &n);
+	while(n!=-1)
+	{
+		memset(dis, -1, sizeof(dis));
+		memset(map, 0, sizeof(map));
+		memset(head, -1, sizeof(head));
+		memset(path, -1, sizeof(path));
+		for(i=0; i<n; i++)
+		{
+			scanf("%s%s", c1, c2);
+			a=(int)c1[0] - 65;
+			b=(int)c2[0] - 65;
+			map[a][b]=map[b][a]=1;
+		}
+		scanf("%d%s%s", &items, c1, c2);
+		start = (int)c1[0]-65, end = (int)c2[0]-65;
+
+		for(i=0; i<60; i++)	dis[i]=max;
+		bfs[0] = end, bp = 0, bfs_len=1;
+		if(end>25)	dis[end]=items+1;
+		else
+		{
+			dis[end] = items + ((items+19)/20);
+			while(dis[end] - (dis[end]+19)/20 != items)	dis[end]++;
+		}	
+
+
+		while(bp<bfs_len)
+		{
+			search(bfs[bp]);
+			bp++;
+		}
+
+		/*for(i=0; i<60; i++)
+			if(dis[i]!=max)	printf("%c : %lld\n", (char)(i+65), dis[i]);*/
+
+		printf("Case %d:\n", cases++);
+		if(start == end)	printf("%d\n", items);
+		else	printf("%lld\n", dis[head[start]]);
+		i=start, a=0;
+		while(i!=end)
+		{
+			path[a++]=i;
+			i=head[i];
+		}
+		for(i=0; i<a; i++)	printf("%c-", (char)(path[i]+65));
+		printf("%c\n", (char)(end+65));
+		scanf("%d", &n);
+	}
+	return 0;
+}
