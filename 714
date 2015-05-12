@@ -1,0 +1,64 @@
+#include <stdio.h>
+/*plz look at 7656 in sophomore競程 for the "check"*/
+long long int data[600], temp;
+long long int left, right, mid;
+int m, k, division[550];
+int check(long long int pages)
+{
+	int i, div_left=k-1;
+	for (i=m-1; i >= 0;)
+	{
+		temp=0;
+		while((div_left<=i)&&(i>=0)&&(temp+data[i]<=pages))
+		{	temp += data[i--];}
+		div_left--;
+	}
+	return (k-1-div_left);
+}
+void mark(int pages)
+{
+	int i, div_left=k-1;
+	for (i=m-1; i >= 0;)
+	{
+		temp=0;
+		while((div_left<=i)&&(i>=0)&&(temp+data[i]<=pages))
+		{	temp += data[i--];}
+		div_left--;
+		division[i] = 1;
+	}
+}
+int main(void)
+{
+	int cases, i, ans;
+	scanf("%d", &cases);
+	while(cases--)
+	{
+		left=0, right=0;
+		scanf("%d%d", &m, &k);
+		for(i=0; i<m; i++)
+		{
+			scanf("%d", &data[i]);
+			right += data[i];
+			if(data[i]>left)	left=data[i];
+		}
+		while(left<right)
+		{
+			mid = (left+right)/2;
+			if(check(mid) <= k)
+			{
+				right=mid;
+				if(check(mid)==k)	ans=mid;
+			}
+			else left = mid+1;
+		}
+		memset(division, 0, sizeof(division));
+		mark(ans);
+		for (i=0; i < m-1; i++)
+		{
+			printf("%d ", data[i]);
+			if(division[i])	printf("/ ");
+		}
+		printf("%d\n", data[i]);
+	}
+	return 0;
+}
