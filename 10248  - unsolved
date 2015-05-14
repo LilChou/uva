@@ -1,0 +1,98 @@
+#include <stdio.h>
+#include <string.h>
+int map[100], ans[400];
+int m, n, ans_p, ans_start;
+void find(int t)
+{
+	int i;
+	for(i=10*t+1; i<10*(t+1); i++)
+		if(map[i])	
+		{
+			ans[ans_p++]=i%10;
+			map[i]=0;
+			printf("find : %d\tans_p=%d\n", i, ans_p);
+			if(i%10 != 0)	find(i%10);
+			return;
+		}
+	i=10*t;
+	if(map[i])	
+	{
+		ans[ans_p++]=i%10;
+		map[i]=0;
+		printf("find : %d\tans_p=%d\n", i, ans_p);
+		if(i%10 != 0)	find(i%10);
+	}
+}
+int main()
+{
+	int s, i, j, flag;
+	while(~scanf("%d%d", &m, &n))
+	{
+		memset(map, 0, sizeof(map));
+		memset(ans, -1, sizeof(ans));
+		if(m==n)	
+		{
+			printf("%d\n", m);
+			if(m/10==0)		printf("len:1\n");
+			else	printf("len:2\n");
+			continue;
+		}
+		if(m<10 && n<10)	
+		{
+			for(i=m; i<=n; i++)	printf("%d", i);
+			printf("\n");
+			printf("len:%d\n", n-m+1);
+			continue;
+		}
+		else
+		{
+			ans_start = ans_p = 200;
+			for(i=m; i<=n; i++)	map[i]=1;
+
+			if(m<10)	s=10;
+			else	s=m;
+
+			for(i=s; i<=n; i++)
+			{
+				if(map[i])
+				{
+					if(i%10==ans[ans_start])
+					{
+						ans[--ans_start]=i/10;
+						map[i]=0;
+						printf("if : %d\tans_start=%d\n", i, ans_start);
+					}
+					else
+					{
+						ans[ans_p++]=i/10;
+						ans[ans_p++]=i%10;
+						map[i]=0;
+						printf("else : %d\tans_p=%d\n", i, ans_p);
+						if(i%10 != 0)	find(i%10);
+					}
+				}
+			}
+			if(m<10)
+			{
+				for(i=m; i<10; i++)
+				{
+					flag=0;
+					for(j=ans_start; j<ans_p; j++)
+						if(ans[j]==i)	
+						{
+							flag=1;
+							break;
+						}
+					if(!flag)	ans[ans_p++]=i;
+					if(!flag)	printf("m : %d\tans_p=%d\n", i, ans_p);
+				}
+			}
+
+			for(i=ans_start; i<ans_p; i++)
+				printf("%d", ans[i]);
+			printf("\n");
+			printf("len:%d\n", ans_p-ans_start);
+		}
+	}
+	return 0;
+}
