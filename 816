@@ -1,0 +1,119 @@
+#include <stdio.h>
+#include <string.h>
+char name[25];
+int dir[4][2]={0, -1, -1, 0, 0, 1, 1, 0};
+int cur_dir, map[11][11][4], q, cur_q, ans[100][2];
+int visit[11][11][4];
+struct zz{
+	int x, y, dir, from;
+}que[10000], s, e;
+
+void bfs()
+{
+	int x, y, d;
+	while(cur_q<=q)
+	{
+		d=map[que[cur_q].x][que[cur_q].y][que[cur_q].dir];
+		x = que[cur_q].x;
+		y = que[cur_q].y;
+		if(x==e.x && y==e.y)	
+		{
+			int t=0, count=que[cur_q].from;
+			while(count>=0)
+			{
+				ans[t][0]=x, ans[t][1]=y, t++;
+				x=que[count].x, y=que[count].y, count=que[count].from;
+			}
+			ans[t][0]=que[0].x, ans[t][1]=que[0].y, t++;
+			ans[t][0]=s.x, ans[t][1]=s.y, t++;
+
+			for(count=t-1; count>=0; count--)
+			{
+				if((t-count)%10==1)	printf("\n ");
+				printf(" (%d,%d)", ans[count][0], ans[count][1]);
+
+			}
+			printf("\n");	break;
+		}
+		if(d>=4)
+		{
+
+			que[q+1].dir=(que[cur_q].dir+1)%4;
+			que[q+1].x=x+dir[que[q+1].dir][0];
+			que[q+1].y=y+dir[que[q+1].dir][1];
+			que[q+1].from = cur_q;
+			if(!visit[que[q+1].x][que[q+1].y][que[q+1].dir])	{q++;}
+			d -= 4;
+		}
+		if(d>=2)
+		{
+			que[q+1].dir=que[cur_q].dir;
+			que[q+1].x=x+dir[que[q+1].dir][0];
+			que[q+1].y=y+dir[que[q+1].dir][1];
+			que[q+1].from = cur_q;
+			if(!visit[que[q+1].x][que[q+1].y][que[q+1].dir])	{q++;}
+			d -= 2;
+		}
+		if(d>=1)
+		{
+			que[q+1].dir=(que[cur_q].dir+3)%4;
+			que[q+1].x=x+dir[que[q+1].dir][0];
+			que[q+1].y=y+dir[que[q+1].dir][1];
+			que[q+1].from = cur_q;
+			if(!visit[que[q+1].x][que[q+1].y][que[q+1].dir])	{q++;}
+			d -= 1;
+		}
+		visit[x][y][que[cur_q].dir]=1;
+		cur_q++;
+		if(cur_q>q)	{printf("\n  No Solution Possible\n");	break;}
+	}
+}
+
+int get_dir(char c)
+{
+	if(c=='W')	return 0;
+	else if(c=='N')	return 1;
+	else if(c=='E')	return 2;
+	else if(c=='S')	return 3;
+	else if(c=='L')	return 1;
+	else if(c=='F')	return 2;
+	else if(c=='R')	return 4;
+	else return -1;
+}
+int main()
+{
+	int t, i, j, x, y;
+	char temp[10];
+	scanf("%s", name);
+	while(strcmp(name, "END"))
+	{
+		scanf("%d%d%s%d%d", &s.x, &s.y, temp, &e.x, &e.y);
+		cur_dir=get_dir(temp[0]);
+		memset(map, -1, sizeof(map));
+		memset(visit, 0, sizeof(visit));
+		memset(que, -1, sizeof(que));
+		while(scanf("%d", &x) && x)
+		{
+			scanf("%d", &y);
+			while(scanf("%s", temp) && temp[0]!='*')
+			{
+				i=1;
+				t=get_dir(temp[0]);
+				map[x][y][t]=0;
+				while(i<strlen(temp))	
+				{
+					j=get_dir(temp[i++]);
+					map[x][y][t] += j;
+				}
+			}
+		}
+		cur_q=q=0;
+		que[0].x = s.x+dir[cur_dir][0];
+		que[0].y = s.y+dir[cur_dir][1];
+		que[0].dir = cur_dir;
+		printf("%s", name);
+		bfs();
+		scanf("%s", name);
+	}
+	return 0;
+}
