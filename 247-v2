@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <string.h>
+char num2name[30][30];
+int call[30][30], visit[30];
+int n, m, num;
+
+
+int find_num(char *cha)
+{
+	int i=0, j;
+	while(i<num)
+	{
+		if(!strcmp(num2name[i], cha))	return i;
+		i++;
+	}
+	strcpy(num2name[num++], cha);
+	return num-1;
+}
+int main()
+{
+	int i, j, k, cases=1;
+	char tc[30];
+	while(~scanf("%d%d", &n, &m) && (n||m))
+	{
+		memset(visit, 0, sizeof(visit));
+		memset(num2name, -1, sizeof(num2name));
+		memset(call, 0, sizeof(call));
+		num=0;
+		while(m--)
+		{
+			scanf("%s", tc);
+			i=find_num(tc);
+			scanf("%s", tc);
+			j=find_num(tc);
+			call[i][j]=1;
+		}
+		for(i=0; i<n; i++)	call[i][i]=1;
+		for(j=0; j<n; j++)
+			for(i=0; i<n; i++)
+				for(k=0; k<n; k++)
+					if(call[i][j] && call[j][k])
+						call[i][k]=1;
+		if(cases>1)	printf("\n");
+		printf("Calling circles for data set %d:\n", cases++);
+		for(i=0; i<n; i++)
+		{
+			if(!visit[i])
+			{
+				for(j=0; j<n; j++)
+					if(!visit[j] && call[i][j] && call[j][i])
+					{
+						visit[i]=visit[j]=1;
+						if(i!=0 && i==j)	printf("\n");
+						if(i==j)	printf("%s", num2name[j]);
+						else	printf(", %s", num2name[j]);
+					}
+			}
+		}
+		printf("\n");
+	}
+	return 0;
+}
