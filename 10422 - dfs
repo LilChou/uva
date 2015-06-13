@@ -1,0 +1,70 @@
+#include <stdio.h>
+#include <string.h>
+int target[5][5]={{1, 1, 1, 1, 1},
+                  {0, 1, 1, 1, 1},
+                  {0, 0,-1, 1, 1},
+                  {0, 0, 0, 0, 1},
+                  {0, 0, 0, 0, 0}};
+int mv_x[8]={1, 1, -1, -1, 2, 2, -2, -2};
+int mv_y[8]={2, -2, 2, -2, 1, -1, 1, -1};
+int ans;
+void dfs(int x, int y, int temp[5][5], int step)
+{     
+    int i, j, k, tx, ty, flag=0;
+    for(j=0; j<5; j++)
+    {
+        for(k=0; k<5; k++)
+        {
+            if(temp[j][k]!=target[j][k])
+            {
+                flag=1;
+                break;
+            }
+        }
+        if(flag)    break;
+    }
+
+    if(!flag)
+    {
+        if(step<ans)    ans=step;
+    }
+    step++;
+    if(step>10) return;
+    for(i=0; i<8; i++)
+    {
+        flag=0;
+        tx = x+mv_x[i], ty = y+mv_y[i];
+        if(tx<0 || ty<0 || tx>4 || ty>4)    continue;
+        temp[x][y]=temp[tx][ty], temp[tx][ty]=-1;
+        dfs(tx, ty, temp, step);
+        temp[tx][ty]=temp[x][y], temp[x][y]=-1;
+
+    }
+}
+int main()
+{
+    int cases, i, j, temp[5][5], x, y;
+    char chr;
+    scanf("%d", &cases);
+    getchar();
+    while(cases--)
+    {
+        ans=15;
+        for(i=0; i<5; i++)
+        {  
+            for(j=0; j<5; j++) 
+            {
+                chr=getchar();
+                if(chr=='1')  temp[i][j]=1;
+                else if(chr=='0') temp[i][j]=0;
+                else if(chr==' ')   {   temp[i][j]=-1, x=i, y=j;   }
+                else temp[i][j]=8;
+            }
+            getchar();
+        }
+        dfs(x, y, temp, 0);
+        if(ans==15) printf("Unsolvable in less than 11 move(s).\n");
+        else    printf("Solvable in %d move(s).\n", ans);
+    }
+    return 0;
+}
